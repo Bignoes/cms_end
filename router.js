@@ -1,6 +1,5 @@
 var express = require('express')
 
-var formidable = require('formidable'); //上传功能的插件
 var path = require('path')
 var fs = require("fs")
 
