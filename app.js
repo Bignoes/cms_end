@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 
 app.use(cors({
 
-    origin: ['http://localhost:8080'], // 这是本地的默认地址和端口，vue启动的项目就是在这里，这样保证了等会我们在浏览器能访问服务器的数据（user.json）
+    origin: ['http://localhost:80'], // 这是本地的默认地址和端口，vue启动的项目就是在这里，这样保证了等会我们在浏览器能访问服务器的数据（user.json）
 
     methods: ["GET", "POST", "PUT", "DELETE"],
 
