@@ -124,7 +124,22 @@ router.get('/topic', function(req, res) {
         })
     }
 
-    //按条件查询
+
+ //按条件查询,查询单个按创建时间查询，查询多个按邮箱查询
+    if (body.read_number != undefined) {
+        return Topic.findOneAndUpdate(body, { $set: { read_number: parseInt(body.read_number) + 1 } }, function(error, topics) {
+            if (error) {
+                return res.status(500).json({
+                    err_code: 500,
+                })
+            }
+            res.status(200).json({
+                err_code: 0,
+                topics: [topics],
+            })
+        })
+    }
+
     Topic.find(body, function(error, topics) {
         if (error) {
             return res.status(500).json({
