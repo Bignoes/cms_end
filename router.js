@@ -8,6 +8,8 @@ const md5 = require('blueimp-md5') //加密插件
 const User = require('./modules/user')
 const Topic = require('./modules/topic')
 const Comment = require('./modules/comment')
+const { log } = require('util')
+const topic = require('./modules/topic')
 
 var router = express.Router()
 
@@ -28,11 +30,13 @@ router.get('/user', function(req, res) {
                 err_code: 500,
             })
         }
+
         if (!user) {
             return res.status(200).json({
                 err_code: 1,
             })
         }
+
         res.status(200).json({
             err_code: 0,
             user,
@@ -72,6 +76,28 @@ router.put('/user', function(req, res) {
     if (body.password) {
         body.password = md5(md5(body.password))
     }
+
+    if (body.nickname) {
+
+        Topic.update({ email: body.email }, { nickname: body.nickname }, { multi: true }, function(error) {
+            if (error) {
+                return res.status(500).json({
+                    err_code: 500,
+                    message: 'Server error...'
+                })
+            }
+        })
+        Comment.update({ email: body.email }, { nickname: body.nickname }, { multi: true }, function(error) {
+            if (error) {
+                return res.status(500).json({
+                    err_code: 500,
+                    message: 'Server error...'
+                })
+            }
+        })
+    }
+
+
 
     User.findOneAndUpdate({ email: body.email }, body, function(error, data) {
         if (error) {
@@ -124,8 +150,7 @@ router.get('/topic', function(req, res) {
         })
     }
 
-
- //按条件查询,查询单个按创建时间查询，查询多个按邮箱查询
+    //按条件查询,查询单个按创建时间查询，查询多个按邮箱查询
     if (body.read_number != undefined) {
         return Topic.findOneAndUpdate(body, { $set: { read_number: parseInt(body.read_number) + 1 } }, function(error, topics) {
             if (error) {
@@ -236,15 +261,16 @@ router.post('/comment', function(req, res) {
 
     var body = req.body
 
-    new Comment(body).save(function(error, data) {
+    new Comment(body).save(function(error, comment) {
         if (error) {
             return res.status(500).json({
                 err_code: 500
             })
         }
-
+        console.log(comment);
         res.status(200).json({
-            err_code: 0
+            err_code: 0,
+            comment,
         })
     })
 
